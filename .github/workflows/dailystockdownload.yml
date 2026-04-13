@@ -1,5 +1,6 @@
 name: Download TOYA Stocks
-
+permissions:
+  contents: write
 on:
   schedule:
     - cron: '0 5 * * *'
@@ -15,7 +16,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+  uses: actions/checkout@v4
+  with:
+    persist-credentials: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
