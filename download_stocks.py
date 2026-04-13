@@ -45,12 +45,22 @@ mapping = {
     "SMALL QUANTITY": 1
 }
 
-for key, value in data.items():
-    stock_text = value.get("stock", "").strip()
+if isinstance(data, dict):
 
-    quantity = mapping.get(stock_text, 0)  # default = 0 jei nežinomas
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
 
-    writer.writerow([key, quantity])
+        writer.writerow(["model", "quantity"])
+
+        for key, value in data.items():
+            stock_text = value.get("stock", "").strip()
+
+            if stock_text not in mapping:
+                print("⚠️ Nežinomas stock tipas:", stock_text)
+
+            quantity = mapping.get(stock_text, 0)
+
+            writer.writerow([key, quantity])
 
     print("✅ CSV sukurtas:", csv_file)
 
