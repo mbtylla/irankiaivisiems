@@ -2,6 +2,7 @@ import requests
 import os
 import csv
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 url = "https://b2b.toya.pl/api/Multimedia/Stocks"
 
@@ -15,7 +16,10 @@ headers = {
     "api-key": api_key
 }
 
-today = datetime.utcnow().strftime("%Y-%m-%d")
+# Lietuvos laikas
+lt_time = datetime.now(ZoneInfo("Europe/Vilnius"))
+today = lt_time.strftime("%Y-%m-%d_%H-%M")
+
 folder = "STOCKS"
 os.makedirs(folder, exist_ok=True)
 
@@ -28,16 +32,7 @@ if response.status_code != 200:
 
 data = response.json()
 
-# --- Konvertuojam DICT → CSV
-if isinstance(data, dict):
-
-    with open(csv_file, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-
-        # header
-        writer.writerow(["model", "quantity"])
-
-        # mapping taisyklės
+# mapping taisyklės
 mapping = {
     "OUT OF STOCK": 0,
     "LARGE QUANTITY": 100,
@@ -45,6 +40,7 @@ mapping = {
     "SMALL QUANTITY": 1
 }
 
+# --- Konvertuojam DICT → CSV
 if isinstance(data, dict):
 
     with open(csv_file, "w", newline="", encoding="utf-8") as f:
