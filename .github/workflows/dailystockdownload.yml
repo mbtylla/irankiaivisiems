@@ -1,0 +1,60 @@
+name: Download TOYA Stocks
+
+on:
+  schedule:
+    - cron: '0 5 * * *'   # kasdien 05:00 UTC (~08:00 LT)
+  workflow_dispatch:       # leidžia paleisti ranka
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Run script
+        run: |
+          python <<EOF
+          import requests
+          from datetime import datetime
+          import os
+
+          url = "https://b2b.toya.pl/api/Multimedia/Stocks"
+          headers = {
+              "accept": "text/plain",
+              "Accept-Language": "en",
+              "api-key": "99264a45c572c1c9697dda1270f3320cc936b5d9d5add9e2de519e18ff460e88"
+          }
+
+          today = datetime.utcnow().strftime("%Y-%m-%d")
+          folder = "STOCKS"
+          os.makedirs(folder, exist_ok=True)
+
+          filename = f"{folder}/stocks_{today}.json"
+
+          response = requests.get(url, headers=headers, timeout=60)
+
+          if response.status_code == 200:
+              with open(filename, "wb") as f:
+                  f.write(response.content)
+              print("Saved:", filename)
+          else:
+              raise Exception(f"Download failed: {response.status_code}")
+          EOF
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add STOCKS/
+          git commit -m "Add stocks for $(date +'%Y-%m-%d')" || echo "No changes"
+          git push
