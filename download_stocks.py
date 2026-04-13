@@ -37,8 +37,20 @@ if isinstance(data, dict):
         # header
         writer.writerow(["model", "quantity"])
 
-        for key, value in data.items():
-            writer.writerow([key, value])
+        # mapping taisyklės
+mapping = {
+    "OUT OF STOCK": 0,
+    "LARGE QUANTITY": 100,
+    "MEDIUM QUANTITY": 20,
+    "SMALL QUANTITY": 1
+}
+
+for key, value in data.items():
+    stock_text = value.get("stock", "").strip()
+
+    quantity = mapping.get(stock_text, 0)  # default = 0 jei nežinomas
+
+    writer.writerow([key, quantity])
 
     print("✅ CSV sukurtas:", csv_file)
 
