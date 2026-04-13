@@ -1,5 +1,7 @@
 import requests
 import os
+import json
+import csv
 from datetime import datetime
 
 url = "https://b2b.toya.pl/api/Multimedia/Stocks"
@@ -18,20 +20,30 @@ today = datetime.utcnow().strftime("%Y-%m-%d")
 folder = "STOCKS"
 os.makedirs(folder, exist_ok=True)
 
-tmp_file = f"{folder}/stocks_{today}.tmp"
-final_file = f"{folder}/stocks_{today}.json"
+json_file = f"{folder}/stocks_{today}.json"
+csv_file = f"{folder}/stocks_{today}.csv"
 
 response = requests.get(url, headers=headers, timeout=60)
 
-if response.status_code == 200 and response.content:
-    with open(tmp_file, "wb") as f:
-        f.write(response.content)
+if response.status_code != 200:
+    raise Exception(f"Klaida: {response.status_code}")
 
-    os.replace(tmp_file, final_file)
-    print("OK:", final_file)
+data = response.json()
 
-elif response.status_code == 401:
-    raise Exception("401 Unauthorized (API key problema)")
+# --- Išsaugom JSON (optional, gali ištrinti jei nereikia)
+with open(json_file, "w", encoding="utf-8") as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+
+# --- Konvertuojam į CSV
+if isinstance(data, list) and len(data) > 0:
+    keys = data[0].keys()
+
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=keys)
+        writer.writeheader()
+        writer.writerows(data)
+
+    print("✅ CSV sukurtas:", csv_file)
 
 else:
-    raise Exception(f"Klaida: {response.status_code}")
+    raise Exception("Netinkamas JSON formatas (ne sąrašas)")
