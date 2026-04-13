@@ -7,56 +7,31 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  TOYA_API_KEY: ${{ secrets.TOYA_API_KEY }}
 
 jobs:
   download:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install requests
+      - name: Install dependencies
         run: pip install requests
 
       - name: Run script
-        run: |
-          python <<EOF
-          import requests
-          from datetime import datetime
-          import os
-
-          headers = {
-    "Accept": "application/json",
-    "Accept-Language": "en",
-    "api-key": os.environ["TOYA_API_KEY"]
-          }
-
-          today = datetime.utcnow().strftime("%Y-%m-%d")
-          folder = "STOCKS"
-          os.makedirs(folder, exist_ok=True)
-
-          filename = f"{folder}/stocks_{today}.json"
-
-          response = requests.get(url, headers=headers, timeout=60)
-
-          if response.status_code == 200:
-              with open(filename, "wb") as f:
-                  f.write(response.content)
-              print("Saved:", filename)
-          else:
-              raise Exception(f"Download failed: {response.status_code}")
-          EOF
+        run: python download_stocks.py
 
       - name: Commit & push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add STOCKS/
-          git commit -m "Add stocks for $(date +'%Y-%m-%d')" || echo "No changes"
+          git commit -m "Stocks $(date +'%Y-%m-%d')" || echo "No changes"
           git push
