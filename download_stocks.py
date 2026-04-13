@@ -30,6 +30,16 @@ if response.status_code != 200:
 
 data = response.json()
 
+# jei ne list, bandome rasti viduje
+if isinstance(data, dict):
+    # dažniausi variantai
+    if "data" in data:
+        data = data["data"]
+    elif "items" in data:
+        data = data["items"]
+    else:
+        raise Exception(f"Nežinoma JSON struktūra: {list(data.keys())}")
+
 # --- Išsaugom JSON (optional, gali ištrinti jei nereikia)
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
