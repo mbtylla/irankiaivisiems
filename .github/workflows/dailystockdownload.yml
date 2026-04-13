@@ -31,11 +31,11 @@ jobs:
           from datetime import datetime
           import os
 
-          url = "https://b2b.toya.pl/api/Multimedia/Stocks"
           headers = {
-              "accept": "text/plain",
-              "Accept-Language": "en",
-              "api-key": os.environ.get("TOYA_API_KEY")
+    "Accept": "application/json",
+    "Accept-Language": "en",
+    "api-key": os.environ["TOYA_API_KEY"]
+}
           }
 
           today = datetime.utcnow().strftime("%Y-%m-%d")
