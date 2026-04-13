@@ -44,16 +44,20 @@ if isinstance(data, dict):
 with open(json_file, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
-# --- Konvertuojam į CSV
-if isinstance(data, list) and len(data) > 0:
-    keys = data[0].keys()
+# --- Konvertuojam į CSV (DICT variantas)
+if isinstance(data, dict):
 
     with open(csv_file, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=keys)
-        writer.writeheader()
-        writer.writerows(data)
+        writer = csv.writer(f)
+
+        # header
+        writer.writerow(["model", "quantity"])
+
+        # eilutės
+        for key, value in data.items():
+            writer.writerow([key, value])
 
     print("✅ CSV sukurtas:", csv_file)
 
 else:
-    raise Exception("Netinkamas JSON formatas (ne sąrašas)")
+    raise Exception("Nežinomas formatas (ne dict)")
