@@ -35,7 +35,6 @@ jobs:
     "Accept": "application/json",
     "Accept-Language": "en",
     "api-key": os.environ["TOYA_API_KEY"]
-}
           }
 
           today = datetime.utcnow().strftime("%Y-%m-%d")
