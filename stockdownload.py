@@ -1,26 +1,37 @@
 import requests
+import os
+from datetime import datetime
 
-# API nustatymai
 url = "https://b2b.toya.pl/api/Multimedia/Stocks"
+
+api_key = os.environ.get("TOYA_API_KEY")
+if not api_key:
+    raise Exception("TOYA_API_KEY nerastas")
+
 headers = {
-    "accept": "text/plain",
+    "Accept": "application/json",
     "Accept-Language": "en",
-    "api-key": "99264a45c572c1c9697dda1270f3320cc936b5d9d5add9e2de519e18ff460e88"
+    "api-key": api_key
 }
 
-# Kur saugoti failą
-output_file = "stocks.json"  # gali keisti į .xml ar .txt jei reikia
+today = datetime.utcnow().strftime("%Y-%m-%d")
+folder = "STOCKS"
+os.makedirs(folder, exist_ok=True)
 
-try:
-    response = requests.get(url, headers=headers, timeout=60)
+tmp_file = f"{folder}/stocks_{today}.tmp"
+final_file = f"{folder}/stocks_{today}.json"
 
-    if response.status_code == 200:
-        with open(output_file, "wb") as f:
-            f.write(response.content)
-        print("✅ Failas sėkmingai išsaugotas:", output_file)
-    else:
-        print(f"❌ Klaida: {response.status_code}")
-        print(response.text)
+response = requests.get(url, headers=headers, timeout=60)
 
-except Exception as e:
-    print("❌ Klaida:", e)
+if response.status_code == 200 and response.content:
+    with open(tmp_file, "wb") as f:
+        f.write(response.content)
+
+    os.replace(tmp_file, final_file)
+    print("OK:", final_file)
+
+elif response.status_code == 401:
+    raise Exception("401 Unauthorized (API key problema)")
+
+else:
+    raise Exception(f"Klaida: {response.status_code}")
