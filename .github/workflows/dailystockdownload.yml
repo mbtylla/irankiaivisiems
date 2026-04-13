@@ -2,8 +2,11 @@ name: Download TOYA Stocks
 
 on:
   schedule:
-    - cron: '0 5 * * *'   # kasdien 05:00 UTC (~08:00 LT)
-  workflow_dispatch:       # leidžia paleisti ranka
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   download:
@@ -32,7 +35,7 @@ jobs:
           headers = {
               "accept": "text/plain",
               "Accept-Language": "en",
-              "api-key": "99264a45c572c1c9697dda1270f3320cc936b5d9d5add9e2de519e18ff460e88"
+              "api-key": os.environ.get("TOYA_API_KEY")
           }
 
           today = datetime.utcnow().strftime("%Y-%m-%d")
