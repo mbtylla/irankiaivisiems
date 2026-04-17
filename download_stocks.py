@@ -2,9 +2,6 @@ import requests
 import os
 import csv
 import xml.etree.ElementTree as ET
-import glob
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 url = "https://b2b.toya.pl/api/Multimedia/Stocks"
 
