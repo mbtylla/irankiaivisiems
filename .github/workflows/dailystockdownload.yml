@@ -42,6 +42,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Stocks $(date +'%Y-%m-%d')"
+            git commit -m "Update TOYA stocks"
             git push
           fi
