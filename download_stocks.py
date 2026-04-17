@@ -18,15 +18,11 @@ headers = {
     "api-key": api_key
 }
 
-# Lietuvos laikas
-lt_time = datetime.now(ZoneInfo("Europe/Vilnius"))
-today = lt_time.strftime("%Y-%m-%d_%H-%M")
-
 folder = "STOCKS"
 os.makedirs(folder, exist_ok=True)
 
-csv_file = f"{folder}/stocks_{today}.csv"
-xml_file = f"{folder}/stocks_{today}.xml"
+csv_file = f"{folder}/toya_stocks.csv"
+xml_file = f"{folder}/toya_stocks.xml"
 
 response = requests.get(url, headers=headers, timeout=60)
 
