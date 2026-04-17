@@ -78,21 +78,3 @@ if isinstance(data, dict):
 else:
     raise Exception("Netinkamas formatas (tikėtasi dict)")
 
-# kiek failų palikti
-KEEP_FILES = 20
-
-# paimam visus STOCKS failus (csv + xml)
-files = glob.glob(f"{folder}/stocks_*.*")
-
-# surikiuojam pagal sukūrimo laiką (naujausi pirmi)
-files_sorted = sorted(files, key=os.path.getmtime, reverse=True)
-
-# failai kuriuos trinam
-files_to_delete = files_sorted[KEEP_FILES:]
-
-for file_path in files_to_delete:
-    try:
-        os.remove(file_path)
-        print("🗑️ Ištrintas:", file_path)
-    except Exception as e:
-        print("❌ Nepavyko ištrinti:", file_path, e)
