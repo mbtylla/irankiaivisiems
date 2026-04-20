@@ -37,7 +37,7 @@ mapping = {
     "OUT OF STOCK": 0,
     "LARGE QUANTITY": 100,
     "MEDIUM QUANTITY": 20,
-    "SMALL QUANTITY": 1
+    "SMALL QUANTITY": 0
 }
 
 if not isinstance(data, dict):
