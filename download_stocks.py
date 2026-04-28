@@ -46,7 +46,7 @@ if not isinstance(data, dict):
 
 def normalize_data(api_data, mapping_dict):
     """
-    API atsakymą paverčia į:
+    API atsakymą paverčia tik į YT- prekes:
     {
         "YT-123": 20,
         "YT-999": 0
@@ -55,16 +55,21 @@ def normalize_data(api_data, mapping_dict):
     result = {}
 
     for key, value in api_data.items():
+        model = str(key).strip()
+
+        # Imam tik TOYA YT- prekes
+        if not model.startswith("YT-"):
+            continue
+
         stock_text = value.get("stock", "").strip()
 
         if stock_text not in mapping_dict:
             print("⚠️ Nežinomas stock tipas:", stock_text)
 
         quantity = mapping_dict.get(stock_text, 0)
-        result[str(key).strip()] = int(quantity)
+        result[model] = int(quantity)
 
     return result
-
 
 def save_csv(snapshot, path):
     with open(path, "w", newline="", encoding="utf-8") as f:
