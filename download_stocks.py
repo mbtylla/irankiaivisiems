@@ -39,7 +39,18 @@ mapping = {
     "MEDIUM QUANTITY": 20,
     "SMALL QUANTITY": 0
 }
+allowed_codes_file = f"{folder}/IVyatosarasas.txt"
 
+def load_allowed_codes(path):
+    if not os.path.exists(path):
+        raise Exception(f"Nerastas leidžiamų kodų failas: {path}")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return {
+            line.strip()
+            for line in f
+            if line.strip()
+        }
 if not isinstance(data, dict):
     raise Exception("Netinkamas formatas (tikėtasi dict)")
 
@@ -137,7 +148,15 @@ def build_delta(previous_snapshot, current_snapshot):
 
 
 current_snapshot = normalize_data(data, mapping)
+allowed_codes = load_allowed_codes(allowed_codes_file)
 
+current_snapshot = {
+    model: quantity
+    for model, quantity in current_snapshot.items()
+    if model in allowed_codes
+}
+
+print(f"✅ Atrinkta prekių pagal IVyatosarasas.txt: {len(current_snapshot)}")
 # 1. išsaugom full CSV
 save_csv(current_snapshot, csv_file)
 
