@@ -57,7 +57,8 @@ if not isinstance(data, dict):
 
 def normalize_data(api_data, mapping_dict):
     """
-    API atsakymą paverčia tik į YT- prekes:
+    API atsakymą paverčia į mano kodų formatą:
+YT- lieka kaip yra, skaitmeniniai kodai gauna A priekyje.
     {
         "YT-123": 20,
         "YT-999": 0
@@ -66,10 +67,14 @@ def normalize_data(api_data, mapping_dict):
     result = {}
 
     for key, value in api_data.items():
-        model = str(key).strip()
+        supplier_model = str(key).strip()
 
-        # Imam tik TOYA YT- prekes
-        if not model.startswith("YT-"):
+        # Konvertuojam tiekėjo kodą į mano kodą
+        if supplier_model.startswith("YT-"):
+            model = supplier_model
+        elif supplier_model.isdigit():
+            model = "A" + supplier_model
+        else:
             continue
 
         stock_text = value.get("stock", "").strip()
